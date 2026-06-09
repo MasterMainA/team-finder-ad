@@ -5,5 +5,5 @@ from .models import CustomUser
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
-        ('Дополнительная информация', {'fields': ('avatar', 'bio', 'phone', 'github')}),
+        ('Дополнительная информация', {'fields': ('name', 'surname', 'avatar', 'about', 'phone', 'github_url')}),
     )
