@@ -8,7 +8,7 @@ class SkillAdmin(admin.ModelAdmin):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'status', 'created_at')
+    list_display = ('name', 'author', 'status', 'created_at')
     list_filter = ('status', 'created_at')
-    search_fields = ('title', 'description')
+    search_fields = ('name', 'description')
     filter_horizontal = ('skills', 'participants', 'favorites')

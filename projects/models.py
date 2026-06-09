@@ -3,7 +3,6 @@ from django.db import models
 
 
 class Skill(models.Model):
-
     name = models.CharField(max_length=50, unique=True, verbose_name="Название навыка")
 
     class Meta:
@@ -16,14 +15,14 @@ class Skill(models.Model):
 
 
 class Project(models.Model):
-
     STATUS_CHOICES = [
         ("open", "Открыт"),
         ("closed", "Закрыт"),
     ]
 
-    title = models.CharField(max_length=255, verbose_name="Название проекта")
+    name = models.CharField(max_length=255, verbose_name="Название проекта")
     description = models.TextField(verbose_name="Описание проекта", blank=True)
+    github_url = models.URLField(blank=True, verbose_name="Ссылка на GitHub")
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -60,4 +59,4 @@ class Project(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return self.title
+        return self.name
