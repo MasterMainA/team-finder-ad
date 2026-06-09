@@ -26,7 +26,7 @@ class Project(models.Model):
     description = models.TextField(verbose_name="Описание проекта", blank=True)
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_not_found=models.CASCADE,
+        on_delete=models.CASCADE,
         related_name="projects",
         verbose_name="Автор проекта",
     )
