@@ -1,12 +1,10 @@
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, FormView, DetailView, UpdateView
+from django.views.generic import CreateView, FormView, DetailView, UpdateView, ListView
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LogoutView
+from django.contrib.auth.views import LogoutView, PasswordChangeView
 from .forms import UserRegistrationForm, UserLoginForm, UserProfileChangeForm
 from .models import CustomUser
-from django.contrib.auth.views import PasswordChangeView
-from django.views.generic import ListView
 
 class RegisterView(CreateView):
     form_class = UserRegistrationForm
@@ -31,27 +29,6 @@ class UserLoginView(FormView):
 class UserLogoutView(LogoutView):
     next_page = reverse_lazy('projects:list')
 
-class UserProfileView(DetailView):
-    model = CustomUser
-    template_name = 'users/user-details.html'
-    context_object_name = 'profile_user'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['projects'] = self.object.projects.all().order_by('-created_at')
-        return context
-
-class ProfileEditView(LoginRequiredMixin, UpdateView):
-    model = CustomUser
-    form_class = UserProfileChangeForm
-    template_name = 'users/edit_profile.html'
-
-    def get_object(self, queryset=None):
-        return self.request.user
-
-    def get_success_url(self):
-        return reverse_lazy('users:profile', kwargs={'pk': self.request.user.pk})
-
 class UserListView(ListView):
     model = CustomUser
     template_name = 'users/participants.html'
@@ -64,3 +41,27 @@ class UserListView(ListView):
 class UserPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
     template_name = 'users/change_password.html'
     success_url = reverse_lazy('users:login')
+
+class UserProfileView(DetailView):
+    model = CustomUser
+    template_name = 'users/user-details.html'
+    context_object_name = 'profile_user'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.object
+        context['projects'] = user.projects.all().order_by('-created_at')
+        context['participating_projects'] = user.joined_projects.exclude(author=user).order_by('-created_at')
+        context['favorite_projects'] = user.favorite_projects.all().order_by('-created_at')
+        return context
+
+class ProfileEditView(LoginRequiredMixin, UpdateView):
+    model = CustomUser
+    form_class = UserProfileChangeForm
+    template_name = 'users/edit_profile.html'
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_success_url(self):
+        return reverse_lazy('users:profile', kwargs={'pk': self.request.user.pk})
