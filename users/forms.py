@@ -61,6 +61,9 @@ class UserProfileChangeForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ["name", "surname", "avatar", "about", "phone", "github_url"]
+        widgets = {
+            "avatar": forms.FileInput(),
+        }
 
     def clean_github_url(self):
         github_url = self.cleaned_data.get("github_url")
