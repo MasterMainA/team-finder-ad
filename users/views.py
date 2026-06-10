@@ -5,6 +5,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LogoutView
 from .forms import UserRegistrationForm, UserLoginForm, UserProfileChangeForm
 from .models import CustomUser
+from django.contrib.auth.views import PasswordChangeView
+from django.views.generic import ListView
 
 class RegisterView(CreateView):
     form_class = UserRegistrationForm
@@ -49,3 +51,16 @@ class ProfileEditView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('users:profile', kwargs={'pk': self.request.user.pk})
+
+class UserListView(ListView):
+    model = CustomUser
+    template_name = 'users/participants.html'
+    context_object_name = 'users'
+    paginate_by = 12
+
+    def get_queryset(self):
+        return CustomUser.objects.all().order_by('-date_joined')
+
+class UserPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    template_name = 'users/change_password.html'
+    success_url = reverse_lazy('users:login')
