@@ -115,28 +115,35 @@ def skills_search(request):
 def skill_add(request, pk):
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
+
     project = get_object_or_404(Project, pk=pk)
     if project.owner != request.user:
         return JsonResponse({'error': 'Forbidden'}, status=403)
+
     data = json.loads(request.body)
     skill_id = data.get('skill_id')
     name = data.get('name')
+
     created = False
     added = False
     skill = None
+
     if skill_id:
         skill = get_object_or_404(Skill, id=skill_id)
     elif name:
         skill, created = Skill.objects.get_or_create(name=name.strip())
+
     if skill:
         if skill not in project.skills.all():
             project.skills.add(skill)
             added = True
         return JsonResponse({
             "skill_id": skill.id,
+            "name": skill.name,
             "created": created,
             "added": added
         })
+
     return JsonResponse({'error': 'Bad Request'}, status=400)
 
 @csrf_exempt
