@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.db import models
 
-
 class Skill(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name="Название навыка")
 
@@ -13,7 +12,6 @@ class Skill(models.Model):
     def __str__(self):
         return self.name
 
-
 class Project(models.Model):
     STATUS_CHOICES = [
         ("open", "Открыт"),
@@ -23,10 +21,10 @@ class Project(models.Model):
     name = models.CharField(max_length=255, verbose_name="Название проекта")
     description = models.TextField(verbose_name="Описание проекта", blank=True)
     github_url = models.URLField(blank=True, verbose_name="Ссылка на GitHub")
-    author = models.ForeignKey(
+    owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="projects",
+        related_name="owned_projects",
         verbose_name="Автор проекта",
     )
     status = models.CharField(
@@ -36,7 +34,6 @@ class Project(models.Model):
         verbose_name="Текущий статус",
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
-
     skills = models.ManyToManyField(
         Skill, blank=True, related_name="projects", verbose_name="Необходимые навыки"
     )

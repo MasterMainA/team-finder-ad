@@ -55,8 +55,8 @@ class UserProfileView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.object
-        context['projects'] = user.projects.all().order_by('-created_at')
-        context['participating_projects'] = user.joined_projects.exclude(author=user).order_by('-created_at')
+        context['projects'] = user.owned_projects.all().order_by('-created_at')
+        context['participating_projects'] = user.joined_projects.exclude(owner=user).order_by('-created_at')
         context['favorite_projects'] = user.favorite_projects.all().order_by('-created_at')
         return context
 

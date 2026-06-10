@@ -53,7 +53,7 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        form.instance.author = self.request.user
+        form.instance.owner = self.request.user
         response = super().form_valid(form)
         self.object.participants.add(self.request.user)
         return response
@@ -72,7 +72,7 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
     def get_queryset(self):
-        return Project.objects.filter(author=self.request.user)
+        return Project.objects.filter(owner=self.request.user)
 
     def get_success_url(self):
         return reverse('projects:detail', kwargs={'pk': self.object.pk})
@@ -80,7 +80,7 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
 class ProjectCompleteView(LoginRequiredMixin, View):
     def post(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
-        if request.user == project.author and project.status == 'open':
+        if request.user == project.owner and project.status == 'open':
             project.status = 'closed'
             project.save()
             return JsonResponse({"status": "ok", "project_status": "closed"})
@@ -116,7 +116,7 @@ def skill_add(request, pk):
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
     project = get_object_or_404(Project, pk=pk)
-    if project.author != request.user:
+    if project.owner != request.user:
         return JsonResponse({'error': 'Forbidden'}, status=403)
     data = json.loads(request.body)
     skill_id = data.get('skill_id')
@@ -145,7 +145,7 @@ def skill_remove(request, pk, skill_id):
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
     project = get_object_or_404(Project, pk=pk)
-    if project.author != request.user:
+    if project.owner != request.user:
         return JsonResponse({'error': 'Forbidden'}, status=403)
     skill = get_object_or_404(Skill, id=skill_id)
     if skill in project.skills.all():
