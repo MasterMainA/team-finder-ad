@@ -1,3 +1,5 @@
+from django.contrib.auth import login, logout
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, FormView, DetailView, UpdateView, ListView
 from django.contrib.auth import login
@@ -5,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LogoutView, PasswordChangeView
 from .forms import UserRegistrationForm, UserLoginForm, UserProfileChangeForm
 from .models import CustomUser
+from django.views import View
 
 class RegisterView(CreateView):
     form_class = UserRegistrationForm
@@ -26,8 +29,10 @@ class UserLoginView(FormView):
         login(self.request, user)
         return super().form_valid(form)
 
-class UserLogoutView(LogoutView):
-    next_page = reverse_lazy('projects:list')
+class UserLogoutView(View):
+    def get(self, request):
+        logout(request)
+        return redirect('projects:list')
 
 class UserListView(ListView):
     model = CustomUser
