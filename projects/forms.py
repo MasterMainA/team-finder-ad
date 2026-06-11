@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Project
+from projects.models import Project
 from team_finder import utils
 
 

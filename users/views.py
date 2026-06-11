@@ -1,12 +1,17 @@
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, FormView, DetailView, UpdateView, ListView
-from django.contrib.auth import login, logout
-from django.shortcuts import redirect
+from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import PasswordChangeView
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
 from django.views import View
-from .forms import UserRegistrationForm, UserLoginForm, UserProfileChangeForm
-from .models import CustomUser
+from django.views.generic import (CreateView, DetailView, FormView, ListView,
+                                  UpdateView)
+
+from team_finder.constants import USERS_LIST_PAGINATION
+from users.forms import (UserLoginForm, UserProfileChangeForm,
+                         UserRegistrationForm)
+
+User = get_user_model()
 
 
 class RegisterView(CreateView):
@@ -38,13 +43,13 @@ class UserLogoutView(View):
 
 
 class UserListView(ListView):
-    model = CustomUser
+    model = User
     template_name = "users/participants.html"
     context_object_name = "users"
-    paginate_by = 12
+    paginate_by = USERS_LIST_PAGINATION
 
     def get_queryset(self):
-        return CustomUser.objects.all().order_by("-date_joined")
+        return User.objects.all().order_by("-date_joined")
 
 
 class UserPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
@@ -53,7 +58,7 @@ class UserPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
 
 
 class UserProfileView(DetailView):
-    model = CustomUser
+    model = User
     template_name = "users/user-details.html"
     context_object_name = "profile_user"
 
@@ -73,7 +78,7 @@ class UserProfileView(DetailView):
 
 
 class ProfileEditView(LoginRequiredMixin, UpdateView):
-    model = CustomUser
+    model = User
     form_class = UserProfileChangeForm
     template_name = "users/edit_profile.html"
 
@@ -81,4 +86,4 @@ class ProfileEditView(LoginRequiredMixin, UpdateView):
         return self.request.user
 
     def get_success_url(self):
-        return reverse_lazy("users:profile", kwargs={"pk": self.request.user.pk})
+        return reverse("users:profile", kwargs={"pk": self.request.user.pk})

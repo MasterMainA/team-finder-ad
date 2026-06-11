@@ -1,0 +1,30 @@
+MAX_SKILL_NAME_LENGTH = 124
+
+MAX_USER_NAME_LENGTH = 124
+MAX_USER_EMAIL_LENGTH = 256
+MAX_USER_SURNAME_LENGTH = 124
+MAX_USER_ABOUT_LENGTH = 256
+MAX_USER_PHONE_LENGTH = 15
+USERS_LIST_PAGINATION = 12
+
+MAX_PROJECT_NAME_LENGTH = 200
+MAX_PROJECT_DESCRIPTION_LENGTH = 500
+PROJECT_STATUS_OPEN = "open"
+PROJECT_STATUS_CLOSED = "closed"
+PROJECT_STATUS_CHOICES = [
+    (PROJECT_STATUS_OPEN, "Открыт"),
+    (PROJECT_STATUS_CLOSED, "Закрыт"),
+]
+PROJECTS_LIST_PAGINATION = 12
+
+AVATAR_SIZE = 200
+AVATAR_COLOR = "#6c5ce7"
+AVATAR_FONT_SIZE = 45
+FONT_PATHS = [
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+    "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+    "/System/Library/Fonts/Helvetica.ttc",
+    "C:\\Windows\\Fonts\\Arial.ttf",
+]
+
+SKILLS_RECOMMENDATION_CNT = 10
