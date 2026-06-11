@@ -1,18 +1,19 @@
-from django.contrib.auth import login, logout
-from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, FormView, DetailView, UpdateView, ListView
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
+from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LogoutView, PasswordChangeView
+from django.contrib.auth.views import PasswordChangeView
+from django.views import View
 from .forms import UserRegistrationForm, UserLoginForm, UserProfileChangeForm
 from .models import CustomUser
-from django.views import View
+
 
 class RegisterView(CreateView):
     form_class = UserRegistrationForm
     template_name = 'users/register.html'
     success_url = reverse_lazy('users:login')
+
 
 class UserLoginView(FormView):
     form_class = UserLoginForm
@@ -29,10 +30,12 @@ class UserLoginView(FormView):
         login(self.request, user)
         return super().form_valid(form)
 
+
 class UserLogoutView(View):
     def get(self, request):
         logout(request)
         return redirect('projects:list')
+
 
 class UserListView(ListView):
     model = CustomUser
@@ -43,9 +46,11 @@ class UserListView(ListView):
     def get_queryset(self):
         return CustomUser.objects.all().order_by('-date_joined')
 
+
 class UserPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
     template_name = 'users/change_password.html'
     success_url = reverse_lazy('users:login')
+
 
 class UserProfileView(DetailView):
     model = CustomUser
@@ -55,10 +60,13 @@ class UserProfileView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.object
+
+        context['user'] = user
         context['projects'] = user.owned_projects.all().order_by('-created_at')
         context['participating_projects'] = user.joined_projects.exclude(owner=user).order_by('-created_at')
         context['favorite_projects'] = user.favorite_projects.all().order_by('-created_at')
         return context
+
 
 class ProfileEditView(LoginRequiredMixin, UpdateView):
     model = CustomUser
