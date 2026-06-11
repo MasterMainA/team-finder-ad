@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('projects', '0001_initial'),
+        ("projects", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='project',
-            old_name='title',
-            new_name='name',
+            model_name="project",
+            old_name="title",
+            new_name="name",
         ),
         migrations.AddField(
-            model_name='project',
-            name='github_url',
-            field=models.URLField(blank=True, verbose_name='Ссылка на GitHub'),
+            model_name="project",
+            name="github_url",
+            field=models.URLField(blank=True, verbose_name="Ссылка на GitHub"),
         ),
     ]

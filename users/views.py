@@ -11,18 +11,18 @@ from .models import CustomUser
 
 class RegisterView(CreateView):
     form_class = UserRegistrationForm
-    template_name = 'users/register.html'
-    success_url = reverse_lazy('users:login')
+    template_name = "users/register.html"
+    success_url = reverse_lazy("users:login")
 
 
 class UserLoginView(FormView):
     form_class = UserLoginForm
-    template_name = 'users/login.html'
-    success_url = reverse_lazy('projects:list')
+    template_name = "users/login.html"
+    success_url = reverse_lazy("projects:list")
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['request'] = self.request
+        kwargs["request"] = self.request
         return kwargs
 
     def form_valid(self, form):
@@ -34,47 +34,51 @@ class UserLoginView(FormView):
 class UserLogoutView(View):
     def get(self, request):
         logout(request)
-        return redirect('projects:list')
+        return redirect("projects:list")
 
 
 class UserListView(ListView):
     model = CustomUser
-    template_name = 'users/participants.html'
-    context_object_name = 'users'
+    template_name = "users/participants.html"
+    context_object_name = "users"
     paginate_by = 12
 
     def get_queryset(self):
-        return CustomUser.objects.all().order_by('-date_joined')
+        return CustomUser.objects.all().order_by("-date_joined")
 
 
 class UserPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
-    template_name = 'users/change_password.html'
-    success_url = reverse_lazy('users:login')
+    template_name = "users/change_password.html"
+    success_url = reverse_lazy("users:login")
 
 
 class UserProfileView(DetailView):
     model = CustomUser
-    template_name = 'users/user-details.html'
-    context_object_name = 'profile_user'
+    template_name = "users/user-details.html"
+    context_object_name = "profile_user"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.object
 
-        context['user'] = user
-        context['projects'] = user.owned_projects.all().order_by('-created_at')
-        context['participating_projects'] = user.joined_projects.exclude(owner=user).order_by('-created_at')
-        context['favorite_projects'] = user.favorite_projects.all().order_by('-created_at')
+        context["user"] = user
+        context["projects"] = user.owned_projects.all().order_by("-created_at")
+        context["participating_projects"] = user.joined_projects.exclude(
+            owner=user
+        ).order_by("-created_at")
+        context["favorite_projects"] = user.favorite_projects.all().order_by(
+            "-created_at"
+        )
         return context
 
 
 class ProfileEditView(LoginRequiredMixin, UpdateView):
     model = CustomUser
     form_class = UserProfileChangeForm
-    template_name = 'users/edit_profile.html'
+    template_name = "users/edit_profile.html"
 
     def get_object(self, queryset=None):
         return self.request.user
 
     def get_success_url(self):
-        return reverse_lazy('users:profile', kwargs={'pk': self.request.user.pk})
+        return reverse_lazy("users:profile", kwargs={"pk": self.request.user.pk})

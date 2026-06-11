@@ -6,46 +6,51 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0001_initial'),
+        ("users", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='customuser',
-            name='bio',
+            model_name="customuser",
+            name="bio",
         ),
         migrations.RemoveField(
-            model_name='customuser',
-            name='github',
+            model_name="customuser",
+            name="github",
         ),
         migrations.AddField(
-            model_name='customuser',
-            name='about',
+            model_name="customuser",
+            name="about",
             field=models.TextField(blank=True),
         ),
         migrations.AddField(
-            model_name='customuser',
-            name='github_url',
+            model_name="customuser",
+            name="github_url",
             field=models.URLField(blank=True),
         ),
         migrations.AddField(
-            model_name='customuser',
-            name='name',
+            model_name="customuser",
+            name="name",
             field=models.CharField(blank=True, max_length=150),
         ),
         migrations.AddField(
-            model_name='customuser',
-            name='surname',
+            model_name="customuser",
+            name="surname",
             field=models.CharField(blank=True, max_length=150),
         ),
         migrations.AlterField(
-            model_name='customuser',
-            name='avatar',
-            field=models.ImageField(blank=True, default='images/default-avatar.png', null=True, upload_to='avatars/'),
+            model_name="customuser",
+            name="avatar",
+            field=models.ImageField(
+                blank=True,
+                default="images/default-avatar.png",
+                null=True,
+                upload_to="avatars/",
+            ),
         ),
         migrations.AlterField(
-            model_name='customuser',
-            name='phone',
+            model_name="customuser",
+            name="phone",
             field=models.CharField(blank=True, max_length=20),
         ),
     ]

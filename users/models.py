@@ -1,10 +1,13 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
 class CustomUser(AbstractUser):
     name = models.CharField(max_length=150, blank=True, verbose_name="Имя")
     surname = models.CharField(max_length=150, blank=True, verbose_name="Фамилия")
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True, default='images/default-avatar.png')
+    avatar = models.ImageField(
+        upload_to="avatars/", null=True, blank=True, default="images/default-avatar.png"
+    )
     about = models.TextField(blank=True)
     phone = models.CharField(max_length=20, blank=True)
     github_url = models.URLField(blank=True)

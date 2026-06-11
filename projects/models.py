@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 
+
 class Skill(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name="Название навыка")
 
@@ -11,6 +12,7 @@ class Skill(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Project(models.Model):
     STATUS_CHOICES = [

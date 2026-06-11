@@ -48,7 +48,9 @@ class UserLoginForm(forms.Form):
         if email and password:
             from django.contrib.auth import authenticate
 
-            self._cached_user = authenticate(self.request, username=email, password=password)
+            self._cached_user = authenticate(
+                self.request, username=email, password=password
+            )
             if self._cached_user is None:
                 raise forms.ValidationError("Неверная почта или пароль")
         return cleaned_data

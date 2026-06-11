@@ -8,19 +8,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('projects', '0002_rename_title_project_name_project_github_url'),
+        ("projects", "0002_rename_title_project_name_project_github_url"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='project',
-            name='author',
+            model_name="project",
+            name="author",
         ),
         migrations.AddField(
-            model_name='project',
-            name='owner',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='owned_projects', to=settings.AUTH_USER_MODEL, verbose_name='Автор проекта'),
+            model_name="project",
+            name="owner",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="owned_projects",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="Автор проекта",
+            ),
             preserve_default=False,
         ),
     ]

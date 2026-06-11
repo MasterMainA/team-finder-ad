@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0002_remove_customuser_bio_remove_customuser_github_and_more'),
+        ("users", "0002_remove_customuser_bio_remove_customuser_github_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='customuser',
-            name='name',
-            field=models.CharField(blank=True, max_length=150, verbose_name='Имя'),
+            model_name="customuser",
+            name="name",
+            field=models.CharField(blank=True, max_length=150, verbose_name="Имя"),
         ),
         migrations.AlterField(
-            model_name='customuser',
-            name='surname',
-            field=models.CharField(blank=True, max_length=150, verbose_name='Фамилия'),
+            model_name="customuser",
+            name="surname",
+            field=models.CharField(blank=True, max_length=150, verbose_name="Фамилия"),
         ),
     ]
