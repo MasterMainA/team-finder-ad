@@ -2,7 +2,6 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 
-from team_finder.utils import generate_avatar_from_initials
 from team_finder.validators import validate_github_url
 
 User = get_user_model()
@@ -23,8 +22,6 @@ class UserRegistrationForm(forms.ModelForm):
 
         if commit:
             user.save()
-            if not user.avatar:
-                generate_avatar_from_initials(user)
         return user
 
 

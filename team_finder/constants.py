@@ -19,7 +19,7 @@ PROJECTS_LIST_PAGINATION = 12
 
 AVATAR_SIZE = 200
 AVATAR_COLOR = "#6c5ce7"
-AVATAR_FONT_SIZE = 45
+AVATAR_FONT_SIZE = 100
 FONT_PATHS = [
     "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
     "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",

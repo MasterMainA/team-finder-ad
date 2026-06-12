@@ -1,4 +1,5 @@
 import json
+from http import HTTPStatus
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
@@ -7,24 +8,35 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django.views.generic import (CreateView, DetailView, ListView, UpdateView,
-                                  View)
+from django.views.generic import CreateView, DetailView, ListView, UpdateView, View
 
 from projects.forms import ProjectForm
 from projects.models import Project, Skill
+from team_finder.constants import (
+    PROJECT_STATUS_CLOSED,
+    PROJECT_STATUS_OPEN,
+    PROJECTS_LIST_PAGINATION,
+    SKILLS_RECOMMENDATION_CNT,
+)
 
 
 class ProjectListView(ListView):
     model = Project
     template_name = "projects/project_list.html"
     context_object_name = "projects"
-    paginate_by = 12
+    paginate_by = PROJECTS_LIST_PAGINATION
 
     def get_queryset(self):
-        queryset = Project.objects.all().order_by("-created_at")
+        queryset = (
+            Project.objects.select_related("owner")
+            .prefetch_related("skills", "participants")
+            .order_by("-created_at")
+        )
+
         skill_name = self.request.GET.get("skill")
         if skill_name:
             queryset = queryset.filter(skills__name=skill_name)
+
         search_query = self.request.GET.get("q")
         if search_query:
             queryset = queryset.filter(
@@ -86,17 +98,19 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
 class ProjectCompleteView(LoginRequiredMixin, View):
     def post(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
-        if request.user == project.owner and project.status == "open":
-            project.status = "closed"
+        if request.user == project.owner and project.status == PROJECT_STATUS_OPEN:
+            project.status = PROJECT_STATUS_CLOSED
             project.save()
-            return JsonResponse({"status": "ok", "project_status": "closed"})
-        return JsonResponse({"status": "error"}, status=403)
+            return JsonResponse(
+                {"status": "ok", "project_status": PROJECT_STATUS_CLOSED}
+            )
+        return JsonResponse({"status": "error"}, status=HTTPStatus.FORBIDDEN)
 
 
 class ProjectParticipateView(LoginRequiredMixin, View):
     def post(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
-        if request.user in project.participants.all():
+        if project.participants.filter(pk=request.user.pk).exists():
             project.participants.remove(request.user)
         else:
             project.participants.add(request.user)
@@ -106,7 +120,7 @@ class ProjectParticipateView(LoginRequiredMixin, View):
 class ProjectFavoriteView(LoginRequiredMixin, View):
     def post(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
-        if request.user in project.favorites.all():
+        if project.favorites.filter(pk=request.user.pk).exists():
             project.favorites.remove(request.user)
         else:
             project.favorites.add(request.user)
@@ -115,7 +129,9 @@ class ProjectFavoriteView(LoginRequiredMixin, View):
 
 def skills_search(request):
     query = request.GET.get("q", "")
-    skills = Skill.objects.filter(name__icontains=query).order_by("name")[:10]
+    skills = Skill.objects.filter(name__icontains=query).order_by("name")[
+        :SKILLS_RECOMMENDATION_CNT
+    ]
     data = [{"id": skill.id, "name": skill.name} for skill in skills]
     return JsonResponse(data, safe=False)
 
@@ -124,11 +140,11 @@ def skills_search(request):
 @require_POST
 def skill_add(request, pk):
     if not request.user.is_authenticated:
-        return JsonResponse({"error": "Unauthorized"}, status=401)
+        return JsonResponse({"error": "Unauthorized"}, status=HTTPStatus.UNAUTHORIZED)
 
     project = get_object_or_404(Project, pk=pk)
     if project.owner != request.user:
-        return JsonResponse({"error": "Forbidden"}, status=403)
+        return JsonResponse({"error": "Forbidden"}, status=HTTPStatus.FORBIDDEN)
 
     data = json.loads(request.body)
     skill_id = data.get("skill_id")
@@ -144,7 +160,7 @@ def skill_add(request, pk):
         skill, created = Skill.objects.get_or_create(name=name.strip())
 
     if skill:
-        if skill not in project.skills.all():
+        if not project.skills.filter(pk=skill.pk).exists():
             project.skills.add(skill)
             added = True
         return JsonResponse(
@@ -156,18 +172,22 @@ def skill_add(request, pk):
             }
         )
 
-    return JsonResponse({"error": "Bad Request"}, status=400)
+    return JsonResponse({"error": "Bad Request"}, status=HTTPStatus.BAD_REQUEST)
 
 
 @csrf_exempt
 @require_POST
 def skill_remove(request, pk, skill_id):
     if not request.user.is_authenticated:
-        return JsonResponse({"error": "Unauthorized"}, status=401)
+        return JsonResponse({"error": "Unauthorized"}, status=HTTPStatus.UNAUTHORIZED)
+
     project = get_object_or_404(Project, pk=pk)
     if project.owner != request.user:
-        return JsonResponse({"error": "Forbidden"}, status=403)
+        return JsonResponse({"error": "Forbidden"}, status=HTTPStatus.FORBIDDEN)
+
     skill = get_object_or_404(Skill, id=skill_id)
-    if skill in project.skills.all():
+
+    if project.skills.filter(pk=skill.pk).exists():
         project.skills.remove(skill)
+
     return JsonResponse({"status": "ok"})

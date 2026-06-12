@@ -1,9 +1,19 @@
 from django.conf import settings
 from django.db import models
 
+from team_finder.constants import (
+    MAX_PROJECT_DESCRIPTION_LENGTH,
+    MAX_PROJECT_NAME_LENGTH,
+    MAX_SKILL_NAME_LENGTH,
+    PROJECT_STATUS_CHOICES,
+    PROJECT_STATUS_OPEN,
+)
+
 
 class Skill(models.Model):
-    name = models.CharField(max_length=50, unique=True, verbose_name="Название навыка")
+    name = models.CharField(
+        max_length=MAX_SKILL_NAME_LENGTH, unique=True, verbose_name="Название навыка"
+    )
 
     class Meta:
         verbose_name = "Навык"
@@ -15,13 +25,14 @@ class Skill(models.Model):
 
 
 class Project(models.Model):
-    STATUS_CHOICES = [
-        ("open", "Открыт"),
-        ("closed", "Закрыт"),
-    ]
-
-    name = models.CharField(max_length=255, verbose_name="Название проекта")
-    description = models.TextField(verbose_name="Описание проекта", blank=True)
+    name = models.CharField(
+        max_length=MAX_PROJECT_NAME_LENGTH, verbose_name="Название проекта"
+    )
+    description = models.TextField(
+        max_length=MAX_PROJECT_DESCRIPTION_LENGTH,
+        verbose_name="Описание проекта",
+        blank=True,
+    )
     github_url = models.URLField(blank=True, verbose_name="Ссылка на GitHub")
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -31,8 +42,8 @@ class Project(models.Model):
     )
     status = models.CharField(
         max_length=10,
-        choices=STATUS_CHOICES,
-        default="open",
+        choices=PROJECT_STATUS_CHOICES,
+        default=PROJECT_STATUS_OPEN,
         verbose_name="Текущий статус",
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")

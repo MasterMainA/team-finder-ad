@@ -29,6 +29,7 @@
 # Базовые настройки Django
 DJANGO_SECRET_KEY=ваш_надежный_секретный_ключ_здесь
 DJANGO_DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost,web
 
 # Настройки подключения к базе данных PostgreSQL (для Docker)
 POSTGRES_DB=team_finder

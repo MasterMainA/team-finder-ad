@@ -1,9 +1,12 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from team_finder.constants import (MAX_USER_ABOUT_LENGTH, MAX_USER_NAME_LENGTH,
-                                   MAX_USER_PHONE_LENGTH,
-                                   MAX_USER_SURNAME_LENGTH)
+from team_finder.constants import (
+    MAX_USER_ABOUT_LENGTH,
+    MAX_USER_NAME_LENGTH,
+    MAX_USER_PHONE_LENGTH,
+    MAX_USER_SURNAME_LENGTH,
+)
 
 
 class User(AbstractUser):
@@ -27,6 +30,12 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         if self.email and not self.username:
             self.username = self.email
+
+        if not self.avatar:
+            from team_finder.utils import generate_avatar_from_initials
+
+            generate_avatar_from_initials(self)
+
         super().save(*args, **kwargs)
 
     def __str__(self):

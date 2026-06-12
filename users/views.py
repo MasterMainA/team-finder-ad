@@ -4,12 +4,10 @@ from django.contrib.auth.views import PasswordChangeView
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import (CreateView, DetailView, FormView, ListView,
-                                  UpdateView)
+from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
 
 from team_finder.constants import USERS_LIST_PAGINATION
-from users.forms import (UserLoginForm, UserProfileChangeForm,
-                         UserRegistrationForm)
+from users.forms import UserLoginForm, UserProfileChangeForm, UserRegistrationForm
 
 User = get_user_model()
 
